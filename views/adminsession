@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="csrf-token" content="<%= csrfToken %>">
+        <title>
+            <%= title %>
+        </title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="/css/styles.css"/>
+    </head>
+    <body>
+        <div class="grid grid-cols-6">
+            <div class="col-start-3 col-span-2">
+                <%- include ('header.ejs') %>
+                <h1>New <%= sportname %> Session</h1>
+                <h6 class="py-4">Creating session for the sport</h6>
+                <div>
+                    <% if(messages && messages.error && messages.error.length > 0)  { %>
+                        <% for(var i=0; i<messages.error.length; i++) { %>
+                                <li> <%= messages.error[i] %></li>
+                        <% } %>
+                      <% } %>
+                </div>
+                <form action="/users" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div>
+                        <label for="time">When will this session get started?</label>
+                        <input type="datetime-local" name="time" placeholder="time" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div>
+                        <label for="venue">Where will this session be played?</label>
+                        <input type="text" name="venue" placeholder="Venue" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div>
+                        <label for="playersJoining">Who are the players joining you in this session?</label>
+                        <input type="text" id="playersJoining" name="playersJoining" placeholder="Names of Players" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div>
+                        <label for="playersNeeded">How many more players do you need?</label>
+                        <input type="text" name="playersNeeded" placeholder="How many players are still needed?" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="py-3">
+                        <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded py-2 px-4">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
