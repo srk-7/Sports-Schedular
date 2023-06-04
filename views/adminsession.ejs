@@ -23,7 +23,7 @@
                         <% } %>
                       <% } %>
                 </div>
-                <form action="/users" method="post">
+                <form action="/createsession" method="post"> <!--here-->
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div>
                         <label for="time">When will this session get started?</label>

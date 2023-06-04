@@ -9,10 +9,7 @@
     {%>
         <li class="Todo-Item">
             <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                <!-- <input id = "todo-checkbox-<%= data[i].id %>" type="checkbox" <%= data[i].completed ? "checked" : "" %> onclick="updateTodo(<%= data[i].id %>, <%= !data[i].completed %>)" class="w-4 h-4 rounded"> -->
-                <!-- <label for="todo-checkbox-<%= data[i].id %>" class="ml-2 text-sm text-gray-600 cursor-pointer"> -->
-                    <%= data[i].name %>
-                <!-- </label> -->
+                    <a href="sports/<%= data[i].id %>" onclick="<%= data[i].name %>"><%= data[i].name %></a> 
                 <a href="#" class="hidden trash-icon ml-2" onclick="deleteTodo(<%= data[i].id %>)">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

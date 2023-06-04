@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 var csrf = require("tiny-csrf");
 var cookieParser = require("cookie-parser");
-const { Todo, User, Admin, Sports } = require("./models");
+const { Todo, User, Admin, Sports, Session } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 app.use(bodyParser.json());
@@ -271,6 +271,21 @@ app.put(
     }
   }
 );
+
+app.get("/sports/:id", async (request, response) => {
+  const sport=await Sports.findOne({
+    where:{
+      id:request.params.id,
+    }
+  });
+  const sportname=sport.name;
+  response.render("adminsession", {
+    title: "Session",
+    sportname,
+    csrfToken: request.csrfToken(),
+  });
+});
+
 
 app.delete(
   "/todos/:id",
