@@ -406,12 +406,18 @@ app.post(
 
 
 app.delete(
-  "/todos/:id",
+  "/sports/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
-    console.log("Deleting a Todo with ID: ", request.params.id);
+    console.log("Deleting a Sport with ID: ", request.params.id);
     try {
-      await Todo.remove(request.params.id, request.user.id);
+      await Sports.destroy({
+        where:
+        {
+          id:request.params.id,
+          adminid:request.user.id,
+        }
+      });
       return response.json({ success: true });
     } catch (error) {
       return response.status(422).json(error);

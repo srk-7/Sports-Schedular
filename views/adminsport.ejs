@@ -26,8 +26,8 @@
                 })
                 .catch((err)=>console.error(err));
             }
-            function deleteTodo(id) {
-                fetch(`/todos/${id}`, {
+            function deleteSport(id) {
+                fetch(`sports/${id}`, {
                     method: "delete",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
