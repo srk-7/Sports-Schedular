@@ -22,7 +22,7 @@
                         <% } %>
                       <% } %>
                 </div>
-                <form action="/session" method="post">
+                <form action="/playersession" method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="py-3">
                         <label for="email">Email:</label>
@@ -33,8 +33,7 @@
                         <input type="password" name="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full" required>
                     </div>
                     <div class="py-3">
-                        <button type="submit" name="submitval" value="admin" class="text-white bg-green-800 font-medium rounded px-5 py-2">Sign in as Admin</button>
-                        <!-- <button type="submit" name="submitval" value="player" class="text-white bg-green-800 font-medium rounded px-5 py-2">Sign in as Player</button> -->
+                        <button type="submit" name="submitval" value="player" class="text-white bg-green-800 font-medium rounded px-5 py-2">Sign in as Player</button>
                     </div>
                 </form>
             </div>

@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 var csrf = require("tiny-csrf");
 var cookieParser = require("cookie-parser");
-const { Todo, User, Admin, Sports, Session } = require("./models");
+const {Admin, Sports, Session, Player } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 app.use(bodyParser.json());
@@ -18,7 +18,6 @@ const flash = require("connect-flash");
 app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "views"));
 const saltRounds = 10;
-
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
@@ -42,6 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
+  "admin",
   new LocalStrategy(
     {
       usernameField: "email",
@@ -64,20 +64,78 @@ passport.use(
   )
 );
 
+passport.use(
+  "player",
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    (username, password, done) => {
+      Player.findOne({ where: { email: username } })
+        .then(async (user) => {
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Invalid password" });
+          }
+        })
+        .catch((error) => {
+          return done(null, false, { message: "Email doesn't exist" });
+        });
+    }
+  )
+);
+
 passport.serializeUser((user, done) => {
-  console.log("Serilaizing user in session", user.id);
-  done(null, user.id);
+  console.log("Serializing user in session ", user.id);
+  let temp;
+  if (Object.getPrototypeOf(user) === Player.prototype) {
+    temp = "Player";
+  } else if (Object.getPrototypeOf(user) === Admin.prototype) {
+    temp = "Admin";
+  }
+  done(null, { id: user.id, currUser: temp });
 });
 
-passport.deserializeUser((id, done) => {
-  Admin.findByPk(id)
-    .then((user) => {
-      done(null, user);
-    })
-    .catch((error) => {
-      done(error, null);
-    });
+passport.deserializeUser(async ({ id, currUser }, done) => {
+  console.log("Curr User", currUser);
+  if (currUser === "Admin") {
+    await Admin.findByPk(id)
+      .then((user) => {
+        done(null, user);
+      })
+      .catch((error) => {
+        done(error, null);
+      });
+  } else if (currUser === "Player") {
+    await Player.findByPk(id)
+      .then((user) => {
+        done(null, user);
+      })
+      .catch((error) => {
+        done(error, null);
+      });
+  }
 });
+
+
+// passport.serializeUser((user, done) => {
+//   console.log("Serilaizing user in session", user.id);
+//   done(null, user.id);
+// });
+
+// passport.deserializeUser((id, done) => {
+//   Admin.findByPk(id)
+//     .then((user) => {
+//       done(null, user);
+//     })
+//     .catch((error) => {
+//       done(error, null);
+//     });
+// });
+
 
 app.set("view engine", "ejs");
 
@@ -86,7 +144,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", async function (request, response) {
   response.render("index", {
-    title: "Todo Application",
+    title: "Sports Schedular Application",
     csrfToken: request.csrfToken(),
   });
 });
@@ -118,6 +176,31 @@ app.get(
     }
   }
 );
+
+app.get(
+  "/playersport",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    const loggedInUser = request.user.id;
+    const UserName = request.user.firstname;
+    const sports = await Sports.findAll();
+    if (request.accepts("html")) {
+      response.render("playersport", {
+        UserName,
+        loggedInUser,
+        sports,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      response.json({
+        UserName,
+        loggedInUser,
+        sports,
+      });
+    }
+  }
+);
+
 
 app.get("/signup", (request, response) => {
   response.render("signup", {
@@ -157,29 +240,57 @@ app.post("/users", async (request, response) => {
     request.flash("error", "Password length should be atleast 8");
     return response.redirect("/signup");
   }
-
-  try {
-    const user = await Admin.create({
-      firstname: request.body.firstName,
-      lastname: request.body.lastName,
-      email: request.body.email,
-      password: hashedPwd,
-    });
-    console.log(
-      "test"
-    );
-    request.login(user, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        response.redirect("/todo");
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    request.flash("success", "Sign up successful");
-    request.flash("error", error.message);
-    return response.redirect("/signup");
+  if(request.body.submit=="admin")
+  {
+    try {
+      const user = await Admin.create({
+        firstname: request.body.firstName,
+        lastname: request.body.lastName,
+        email: request.body.email,
+        password: hashedPwd,
+      });
+      console.log(
+        "test"
+      );
+      request.login(user, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          response.redirect("/sports");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      request.flash("success", "Sign up successful");
+      request.flash("error", error.message);
+      return response.redirect("/signup");
+    }
+  }
+  else
+  {
+    try {
+      const user = await Player.create({
+        firstname: request.body.firstName,
+        lastname: request.body.lastName,
+        email: request.body.email,
+        password: hashedPwd,
+      });
+      console.log(
+        "test"
+      );
+      request.login(user, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          response.redirect("/playersport");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      request.flash("success", "Sign up successful");
+      request.flash("error", error.message);
+      return response.redirect("/signup");
+    }
   }
 });
 
@@ -190,15 +301,35 @@ app.get("/login", async (request, response) => {
   });
 });
 
+app.get("/playerlogin", async (request, response) => {
+  response.render("playerlogin", {
+    title: "Login",
+    csrfToken: request.csrfToken(),
+  });
+});
+
+
 app.post(
   "/session",
-  passport.authenticate("local", {
+  passport.authenticate("admin", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
   (request, response) => {
     //console.log(request.user);
     response.redirect("/sports");
+  }
+);
+
+
+app.post(
+  "/playersession",
+  passport.authenticate("player", {
+    failureRedirect: "/palyerlogin",
+    failureFlash: true,
+  }),
+  (request, response) => {
+    response.redirect("/playersport");
   }
 );
 
@@ -212,27 +343,6 @@ app.get("/signout", (request, response, next) => {
   });
 });
 
-app.get("/todos", async function (request, response) {
-  console.log("Processing list of all Todos ...");
-  // FILL IN YOUR CODE HERE
-  try {
-    const todos = await Todo.findAll();
-    return response.send(todos);
-  } catch (error) {
-    console.log(error);
-    return response.status(422).json(error);
-  }
-});
-
-app.get("/todos/:id", async function (request, response) {
-  try {
-    const todo = await Todo.findByPk(request.params.id);
-    return response.json(todo);
-  } catch (error) {
-    console.log(error);
-    return response.status(422).json(error);
-  }
-});
 
 app.post(
   "/sports",
@@ -255,36 +365,44 @@ app.post(
 );
 
 
-app.put(
-  "/todos/:id",
-  connectEnsureLogin.ensureLoggedIn(),
-  async function (request, response) {
-    try {
-      const todo = await Todo.findByPk(request.params.id);
-      const updatedTodo = await todo.setCompletionStatus(
-        request.body.completed
-      );
-      return response.json(updatedTodo);
-    } catch (error) {
-      console.log(error);
-      return response.status(422).json(error);
-    }
-  }
-);
-
 app.get("/sports/:id", async (request, response) => {
   const sport=await Sports.findOne({
     where:{
       id:request.params.id,
     }
   });
-  const sportname=sport.name;
   response.render("adminsession", {
     title: "Session",
-    sportname,
+    sport,
     csrfToken: request.csrfToken(),
   });
 });
+
+
+
+
+//creating a sport session
+app.post(
+  "/createsession",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    console.log("Creating a Session to the sport", request.body);
+    try {
+        const session = await Session.create({
+        start: request.body.time,
+        place: request.body.venue,
+        participants: request.body.playersJoining
+        .split(",").map((player) => player.trim()),
+        playersrequired: request.body.playersNeeded,
+        sportid: request.body.sportid,
+      });
+      return response.redirect(`sports/${request.body.sportid}`);
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
 
 
 app.delete(

@@ -14,7 +14,7 @@
         <div class="grid grid-cols-6">
             <div class="col-start-3 col-span-2">
                 <%- include ('header.ejs') %>
-                <h1>New <%= sportname %> Session</h1>
+                <h1>New <%= sport.name %> Session</h1>
                 <h6 class="py-4">Creating session for the sport</h6>
                 <div>
                     <% if(messages && messages.error && messages.error.length > 0)  { %>
@@ -25,6 +25,7 @@
                 </div>
                 <form action="/createsession" method="post"> <!--here-->
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="sportid" value="<%= sport.id %>">
                     <div>
                         <label for="time">When will this session get started?</label>
                         <input type="datetime-local" name="time" placeholder="time" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
