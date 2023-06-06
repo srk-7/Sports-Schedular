@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd  && npm test
+cd sports-schedular && npm test
 npx lint-staged
