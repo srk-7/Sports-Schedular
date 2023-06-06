@@ -64,7 +64,7 @@
                     </div>
                 </form>  
                 <div>
-                    <%- include('sports.ejs',{title: "CREATED SPORTS    ", data: sports}) %>
+                    <%- include('sports.ejs',{title: "sports", data: sports}) %>
                 </div>
             </div>
         </div> 
