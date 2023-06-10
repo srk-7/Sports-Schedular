@@ -405,6 +405,44 @@ app.post(
 );
 
 
+app.get(
+  "/sports/beforesession/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    const loggedInUser = request.user.id;
+    const UserName = request.user.firstname;
+    const session = await Session.findAll({
+      where:
+      {
+        sportid:request.params.id,
+      }
+    })
+    const sport = await Sports.findOne({
+      where:{
+        adminid:loggedInUser,
+        id:request.params.id,
+      }
+  });
+    if (request.accepts("html")) {
+      response.render("beforesession", {
+        UserName,
+        loggedInUser,
+        session,
+        sport,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      response.json({
+        UserName,
+        session,
+        loggedInUser,
+        sport,
+      });
+    }
+  }
+);
+
+
 app.delete(
   "/sports/:id",
   connectEnsureLogin.ensureLoggedIn(),

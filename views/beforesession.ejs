@@ -15,9 +15,12 @@
                 <h3 class="text-2xl font-serif font-bold text-yellow-900">Player #<%= UserName %></h3>
                 <b><h1><%= sport.name %></h1></b><br>
                 <h1>Upcoming Sessions</h1><hr>
-                <!-- include the slots pending -->
+                <!-- including the slots pending -->
+                <div>
+                    <%- include('sessionlist.ejs',{title: "CREATED SESSIONS", data: session}) %>
+                </div>
                 <hr style="height:2px;border-width:0;color:black;background-color:black">
-                <a href="#">Create a new Session for <%= sport.name %></a>
+                <a href="/sports/<%= sport.id %>">Create a new Session for <%= sport.name %></a><br>
                 <a href="#">View previous Sessions for <%= sport.name %></a>
             </div>
         </div> 
