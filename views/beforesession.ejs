@@ -13,12 +13,11 @@
                 </svg>
                 <a href="/signout" class="text-black font-bold text-2xl underline absolute top-2 right-10">Signout</a>
                 <h3 class="text-2xl font-serif font-bold text-yellow-900 py-7">Player #<%= UserName %></h3>
-                <b><h1 class="text-3xl font-sans font-bold text-black"><%= sport.name %></h1></b><br>
-                <h1>Upcoming Sessions</h1>
+                <b><h1 class="text-3xl font-sans font-bold text-black"><%= sport.name %></h1></b>
                 <hr class="border-4 border-black"><br>
                 <!-- including the slots pending -->
                 <div>
-                    <%- include('sessionlist.ejs',{title: "CREATED SESSIONS", data: session}) %>
+                    <%- include('sessionlist.ejs',{title: "AVAILABLE SESSIONS", data: session}) %>
                 </div>
                 <hr class="border-4 border-black"><br>
                 <u><a href="/sports/<%= sport.id %>">Create a new Session for <%= sport.name %></a><br></u>
