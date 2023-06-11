@@ -50,8 +50,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>
                 <a href="/signout" class="text-black font-bold text-2xl underline absolute top-2 right-10">Signout</a>
-                <%- include ('header') %>
-                <h3 class="text-2xl font-serif font-bold text-yellow-900">Hola! #<%= UserName %></h3>
+                <h3 class="text-3xl underline font-serif font-bold text-red-500 py-7">SPORTS  SCHEDULAR  APPLICATION</h3>
+                <h3 class="text-1xl font-serif font-bold text-yellow-900">Hola! #<%= UserName %></h3>
+                <p>*Click on your interested sport name to join the existing session or to create a new session*</p>
                 <form action="/sports" method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="flex gap-2 py-4">

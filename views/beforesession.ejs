@@ -12,16 +12,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>
                 <a href="/signout" class="text-black font-bold text-2xl underline absolute top-2 right-10">Signout</a>
-                <h3 class="text-2xl font-serif font-bold text-yellow-900">Player #<%= UserName %></h3>
-                <b><h1><%= sport.name %></h1></b><br>
-                <h1>Upcoming Sessions</h1><hr>
+                <h3 class="text-2xl font-serif font-bold text-yellow-900 py-7">Player #<%= UserName %></h3>
+                <b><h1 class="text-3xl font-sans font-bold text-black"><%= sport.name %></h1></b><br>
+                <h1>Upcoming Sessions</h1>
+                <hr class="border-4 border-black"><br>
                 <!-- including the slots pending -->
                 <div>
                     <%- include('sessionlist.ejs',{title: "CREATED SESSIONS", data: session}) %>
                 </div>
-                <hr style="height:2px;border-width:0;color:black;background-color:black">
-                <a href="/sports/<%= sport.id %>">Create a new Session for <%= sport.name %></a><br>
-                <a href="#">View previous Sessions for <%= sport.name %></a>
+                <hr class="border-4 border-black"><br>
+                <u><a href="/sports/<%= sport.id %>">Create a new Session for <%= sport.name %></a><br></u>
+                <u><a href="#">View previous Sessions for <%= sport.name %></a></u>
             </div>
         </div> 
     </body>
