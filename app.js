@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 var csrf = require("tiny-csrf");
 var cookieParser = require("cookie-parser");
-const {Admin, Sports, Session, Player } = require("./models");
+const {Admin, Sports, Session, Player, participants } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 app.use(bodyParser.json());
@@ -22,6 +22,7 @@ const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
 const LocalStrategy = require("passport-local");
+// const participants = require("./models/participants");
 
 app.use(flash());
 app.use(
@@ -365,6 +366,48 @@ app.post(
 );
 
 
+app.post(
+  "/joinsession/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    try {
+      const uid = request.user.id;
+      if (Object.getPrototypeOf(request.user) === Player.prototype) 
+      {
+        const curruser = await Player.findOne({
+          where:{
+            id:uid,
+          }
+        });
+        console.log("playerrrrr-------------------------------------------------------------------------------------",curruser.name)
+        
+        await participants.create({
+          pname:curruser.firstname,
+          sessionid:request.params.id,
+        })
+      } 
+      else if (Object.getPrototypeOf(request.user) === Admin.prototype) 
+      {
+        const curruser = await Admin.findOne({
+          where:{
+            id:uid,
+          }
+        });
+        console.log("adminnnnnn-------------------------------------------------------------------------------------",curruser.name)
+        await participants.create({
+          pname:curruser.firstname,
+          sessionid:request.params.id,
+        })
+      }
+      return response.redirect(`/session/${request.params.id}`);
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+
+
 app.get("/sports/:id", async (request, response) => {
   const sport=await Sports.findOne({
     where:{
@@ -373,6 +416,33 @@ app.get("/sports/:id", async (request, response) => {
   });
   response.render("adminsession", {
     title: "Session",
+    sport,
+    csrfToken: request.csrfToken(),
+  });
+});
+
+app.get("/session/:id", async (request, response) => {
+  const players=await participants.findAll({
+    where:{
+      sessionid:request.params.id,
+    }
+  });
+  const sid=await Session.findOne({
+    where:{
+      id:request.params.id,
+
+    }
+  })
+  const sport = await Sports.findOne({
+    where:{
+      id:sid.sportid,
+    }
+  })
+  console.log(players)
+  response.render("clicksession", {
+    title: "Session",
+    players,
+    sessionid:request.params.id,
     sport,
     csrfToken: request.csrfToken(),
   });
@@ -388,6 +458,8 @@ app.post(
   async function (request, response) {
     console.log("Creating a Session to the sport", request.body);
     try {
+      const players = request.body.playersJoining
+      .split(",").map((player) => player.trim());
         const session = await Session.create({
         start: request.body.time,
         place: request.body.venue,
@@ -396,7 +468,15 @@ app.post(
         playersrequired: request.body.playersNeeded,
         sportid: request.body.sportid,
       });
-      return response.redirect(`sports/${request.body.sportid}`);
+      for(var i=0;i<players.length;i++)
+      {
+        console.log(players[i]);
+        await participants.create({
+          pname:players[i],
+          sessionid:session.id,
+        }) 
+      }
+      return response.redirect(`session/${session.id}`);
     } catch (error) {
       console.log(error);
       return response.status(422).json(error);
@@ -420,6 +500,42 @@ app.get(
     const sport = await Sports.findOne({
       where:{
         adminid:loggedInUser,
+        id:request.params.id,
+      }
+  });
+    if (request.accepts("html")) {
+      response.render("beforesession", {
+        UserName,
+        loggedInUser,
+        session,
+        sport,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      response.json({
+        UserName,
+        session,
+        loggedInUser,
+        sport,
+      });
+    }
+  }
+);
+
+app.get(
+  "/sports/playerbeforesession/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    const loggedInUser = request.user.id;
+    const UserName = request.user.firstname;
+    const session = await Session.findAll({
+      where:
+      {
+        sportid:request.params.id,
+      }
+    })
+    const sport = await Sports.findOne({
+      where:{
         id:request.params.id,
       }
   });
