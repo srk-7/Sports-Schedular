@@ -577,6 +577,43 @@ app.delete(
   }
 );
 
+app.get(
+  "/editsport/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      const sport = await Sports.findOne({
+        where: {
+          id: request.params.id,
+        },
+      });
+
+      response.render("editsport", {
+        sport,
+        csrfToken: request.csrfToken(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+app.post(
+  "/sport/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    try {
+      await Sports.update(
+        { sportname: request.body.name },
+        { where: { id: request.params.id } }
+      );
+      return response.redirect("/sports/beforesession/:id");
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
 
 app.delete(
   "/player/:id",

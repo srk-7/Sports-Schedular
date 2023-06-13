@@ -5,25 +5,40 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styles.css" rel="stylesheet"/>
     </head>
-    <body class="font-bold">
+    <body>
         <div class="grid grid-cols-6">
             <div class="col-start-3 col-span-2">
                 <svg class="absolute top-3 right-4 h-15 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                 </svg>
                 <a href="/signout" class="text-black font-bold text-2xl underline absolute top-2 right-10">Signout</a>
-                <h3 class="text-2xl font-serif font-bold text-yellow-900 py-7">Player #<%= UserName %></h3>
-                <b><h1 class="text-3xl font-sans font-bold text-black"><%= sport.name %></h1></b>
-                <a href="/editsport/<%= sport.id %>">Edit sport</a>
-                <hr class="border-4 border-black"><br>
-                <!-- including the slots pending -->
-                <div>
-                    <%- include('sessionlist.ejs',{title: "AVAILABLE SESSIONS", data: session}) %>
-                </div>
-                <hr class="border-4 border-black"><br>
-                <u><a href="/sports/<%= sport.id %>">Create a new Session for <%= sport.name %></a><br></u>
-                <u><a href="#">View previous Sessions for <%= sport.name %></a></u>
+                <h3 class="text-4xl mb-4">Edit sport </h3>
+                <form action="/sport/<%=sport.id%>" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="flex gap-2 py-4">
+                        <div class="flex-auto">
+                            <input type="text" name="title" placeholder="Enter the Sport name" class="border border-black-300 rounded text-black-900 w-full p-2 text-sm" required />
+                        </div>
+                        <div class="flex-none">
+                            <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Done</button>
+                        </div>
+                    </div>
+                </form> 
+                
             </div>
         </div> 
     </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
