@@ -379,7 +379,6 @@ app.post(
             id:uid,
           }
         });
-        console.log("playerrrrr-------------------------------------------------------------------------------------",curruser.name)
         
         await participants.create({
           pname:curruser.firstname,
@@ -393,7 +392,6 @@ app.post(
             id:uid,
           }
         });
-        console.log("adminnnnnn-------------------------------------------------------------------------------------",curruser.name)
         await participants.create({
           pname:curruser.firstname,
           sessionid:request.params.id,
@@ -427,7 +425,7 @@ app.get("/session/:id", async (request, response) => {
       sessionid:request.params.id,
     }
   });
-  const sid=await Session.findOne({
+  const session=await Session.findOne({
     where:{
       id:request.params.id,
 
@@ -435,14 +433,14 @@ app.get("/session/:id", async (request, response) => {
   })
   const sport = await Sports.findOne({
     where:{
-      id:sid.sportid,
+      id:session.sportid,
     }
   })
-  console.log(players)
   response.render("clicksession", {
     title: "Session",
     players,
     sessionid:request.params.id,
+    session,
     sport,
     csrfToken: request.csrfToken(),
   });
