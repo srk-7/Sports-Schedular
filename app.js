@@ -578,4 +578,24 @@ app.delete(
 );
 
 
+app.delete(
+  "/player/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    console.log("Deleting a Player with ID: --------------------------", request.params.id);
+    try {
+      await participants.destroy({
+        where:
+        {
+          id:request.params.id,
+        }
+      });
+      return response.json({ success: true });
+    } catch (error) {
+      return response.status(422).json(error);
+    }
+  }
+);
+
+
 module.exports = app;

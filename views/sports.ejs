@@ -9,8 +9,7 @@
     {%>
         <li class="Sport-Item">
             <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
-                    <!-- <a href="sports/<%= data[i].id %>" onclick="<%= data[i].name %>"><%= data[i].name %></a>  -->
-                    <a href="sports/beforesession/<%= data[i].id %>" onclick="<%= data[i].name %>"><%= data[i].name %></a> 
+                <a href="sports/beforesession/<%= data[i].id %>" onclick="<%= data[i].name %>"><%= data[i].name %></a> 
                 <a href="#" class="hidden trash-icon ml-2" onclick="deleteSport(<%= data[i].id %>)">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

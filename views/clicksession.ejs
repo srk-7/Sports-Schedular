@@ -4,6 +4,27 @@
         <meta name="csrf-token" content="<%= csrfToken %>" />
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styles.css" rel="stylesheet"/>
+        <script>
+            var token=document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content");
+            function deletePlayer(id) {
+                console.log("Deleting ...........................................................")
+                fetch(`/player/${id}`, {
+                    method: "delete",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        "_csrf":token
+                    })
+                })
+                .then((res)=> {
+                    if(res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+            }
+        </script>
     </head>
     <body class="font-bold">
         <div class="grid grid-cols-6">
@@ -24,8 +45,7 @@
                     <form action="/joinsession/<%= sessionid %>" method="post">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <br><br>
-                        <button type="submit" class="text-white bg-green-800 font-medium rounded px-8 py-2">Join session</button>
-                        <button class="text-white bg-green-800 font-medium rounded px-8 py-2" onclick="#">Leave session</button>
+                        <button type="submit" name="join" class="text-white bg-green-800 font-medium rounded px-8 py-2">Join session</button>
                     </form>
                 </div>
             </div>
