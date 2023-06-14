@@ -1,0 +1,16 @@
+<h5>
+    <%= title %> <span
+    class="bg-gray-100 text-gray-800 text-sm font-small mr-2 px-2.5 py-0.5 rounded dark:bg-gray-200 dark:text-gray-900 justify-center items-center items">
+    <%= data.length %>
+</span>
+</h5>
+<ul class="list-none">
+    <% for(var i=0;i<data.length;i++)
+    {%>
+        <li class="Sport-Item">
+            <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50">
+                <%= data[i].pname %>
+            </div>
+        </li>
+    <% } %>
+</ul>

@@ -4,34 +4,10 @@
         <meta name="csrf-token" content="<%= csrfToken %>" />
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styles.css" rel="stylesheet"/>
-        <script>
-            var token=document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content");
-            function deletePlayer(id) {
-                console.log("Deleting ...........................................................")
-                fetch(`/player/${id}`, {
-                    method: "delete",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        "_csrf":token
-                    })
-                })
-                .then((res)=> {
-                    if(res.ok) {
-                        window.location.reload();
-                    }
-                })
-                .catch((err) => console.error(err));
-            }
-        </script>
     </head>
     <body class="font-bold">
         <div class="grid grid-cols-6">
             <div class="col-start-3 col-span-2">
-                <svg class="absolute top-3 right-4 h-15 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                </svg>
                 <a href="/signout" class="text-black font-bold text-2xl underline absolute top-2 right-10">Signout</a>
                 <h3 class="text-2xl font-serif font-bold text-yellow-900 py-7"><%= sport.name %></h3>
                 <hr class="border-4 border-black"><br>
@@ -39,7 +15,7 @@
                     This session is scheduled for <%= session.start %> and will be played at <%= session.place %>.
                 </p><br>
                 <div>
-                    <%- include('playerlist.ejs',{title: "REGISTERED PLAYERS", data: players}) %>
+                    <%- include('playerlist2.ejs',{title: "REGISTERED PLAYERS", data: players}) %>
                 </div>
                 <div>
                     <form action="/joinsession/<%= sessionid %>" method="post">

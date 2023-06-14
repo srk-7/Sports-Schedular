@@ -326,7 +326,7 @@ app.post(
 app.post(
   "/playersession",
   passport.authenticate("player", {
-    failureRedirect: "/palyerlogin",
+    failureRedirect: "/playerlogin",
     failureFlash: true,
   }),
   (request, response) => {
@@ -406,6 +406,51 @@ app.post(
 );
 
 
+app.post(
+  "/leavesession/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async function (request, response) {
+    try {
+      const uid = request.user.id;
+      if (Object.getPrototypeOf(request.user) === Player.prototype) 
+      {
+        const curruser = await Player.findOne({
+          where:{
+            id:uid,
+          }
+        });
+        
+        await participants.destroy({
+          where:{
+            pname:curruser.firstname,
+            sessionid:request.params.id,
+          }
+        })
+      } 
+      else if (Object.getPrototypeOf(request.user) === Admin.prototype) 
+      {
+        const curruser = await Admin.findOne({
+          where:{
+            id:uid,
+          }
+        });
+        await participants.destroy({
+          where:{
+            pname:curruser.firstname,
+            sessionid:request.params.id,
+          }
+        })
+      }
+      return response.redirect(`/session/${request.params.id}`);
+    } catch (error) {
+      console.log(error);
+      return response.status(422).json(error);
+    }
+  }
+);
+
+
+
 app.get("/sports/:id", async (request, response) => {
   const sport=await Sports.findOne({
     where:{
@@ -436,14 +481,26 @@ app.get("/session/:id", async (request, response) => {
       id:session.sportid,
     }
   })
-  response.render("clicksession", {
-    title: "Session",
-    players,
-    sessionid:request.params.id,
-    session,
-    sport,
-    csrfToken: request.csrfToken(),
-  });
+  if (Object.getPrototypeOf(request.user) === Player.prototype) {
+    console.log("player..................session")
+    response.render("pclicksession", {
+      title: "Session",
+      players,
+      sessionid:request.params.id,
+      session,
+      sport,
+      csrfToken: request.csrfToken(),
+    });
+  } else if (Object.getPrototypeOf(request.user) === Admin.prototype) {
+    response.render("clicksession", {
+      title: "Session",
+      players,
+      sessionid:request.params.id,
+      session,
+      sport,
+      csrfToken: request.csrfToken(),
+    });
+  }
 });
 
 
