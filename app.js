@@ -558,6 +558,26 @@ app.get(
 
 
 app.delete(
+  "/session/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    console.log("Deleting a Session with ID: ", request.params.id);
+    try {
+      await Session.destroy({
+        where:
+        {
+          id:request.params.id,
+        }
+      });
+      return response.json({ success: true });
+    } catch (error) {
+      return response.status(422).json(error);
+    }
+  }
+);
+
+
+app.delete(
   "/sports/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
@@ -601,13 +621,16 @@ app.get(
 app.post(
   "/sport/:id",
   connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     try {
+      console.log(request.body.name);
       await Sports.update(
-        { sportname: request.body.name },
+        { name: request.body.name },
+
         { where: { id: request.params.id } }
       );
-      return response.redirect("/sports/beforesession/:id");
+      return response.redirect(`/sports/beforesession/${request.params.id}`);
     } catch (error) {
       console.log(error);
       return response.status(422).json(error);
